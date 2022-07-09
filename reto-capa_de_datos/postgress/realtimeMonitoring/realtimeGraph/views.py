@@ -597,7 +597,6 @@ def get_limit_values(request, **kwargs):
     elif measurements.count() > 0:
         selectedMeasure = measurements[0]
 
-    locations = Location.objects.all()
     try:
         start = datetime.fromtimestamp(
             float(request.GET.get("from", None)) / 1000
@@ -623,24 +622,22 @@ def get_limit_values(request, **kwargs):
         measurement__name=selectedMeasure.name,  time__gte=start.date(), time__lte=end.date()
         ).order_by('value')
 
-    data_max = data.first()
-    data_min = data.last()
-
-    
+    data_max = data.last()
+    data_min = data.first()
     
     data_result["max"] = {
         "country": data_max.station.location.country.name,
         "city": data_max.station.location.city.name,
         "state": data_max.station.location.state.name,
         selectedMeasure.name: data_max.value,
-        "day": data_max.time
+        "time": data_max.time
         }
     data_result["min"] = {
         "country": data_min.station.location.country.name,
         "city": data_min.station.location.city.name,
         "state": data_min.station.location.state.name,
         selectedMeasure.name: data_min.value,
-        "day": data_min.time
+        "time": data_min.time
         }
     return JsonResponse(data_result)
 
